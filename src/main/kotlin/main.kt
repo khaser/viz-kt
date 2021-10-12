@@ -46,10 +46,9 @@ class Renderer(val layer: SkiaLayer) : SkiaRenderer {
         val w = (width / contentScale).toInt()
         val h = (height / contentScale).toInt()
 
-        canvas.drawRoundDiagram(listOf(30F, 30F, 40F), listOf("kek", "lol", "pomidor"), Position(500F, 500F), 300F)
+        canvas.drawRoundDiagram(listOf(10F,10F,10F,10F,10F,10F,10F,10F,10F,10F), listOf("a","a","a","a","a","a","a","a","a","a"), Position(500F, 500F), 300F)
         layer.needRedraw()
     }
-
 
     fun Canvas.drawRoundDiagram(percents: List<Float>, names: List<String>, center: Position, r: Float) {
         require(percents.reduce { acc, it -> acc + it } == 100F)
@@ -70,7 +69,7 @@ class Renderer(val layer: SkiaLayer) : SkiaRenderer {
 data class HSV(val H: Float, val S: Float, val V: Float)
 data class RGB(val R: Int, val G: Int, val B: Int) {
     fun toInt(): Int {
-        return (255 shl (3 * Byte.SIZE_BITS)) + R * (1 shl (2 * Byte.SIZE_BITS)) + G * (1 shl Byte.SIZE_BITS) * B
+        return Color4f(R / 255F, G / 255F, B / 255F).toColor()
     }
 }
 
@@ -79,12 +78,12 @@ fun rgbToHsv(rgb: RGB): HSV {
     val maxC = abs.maxOrNull() ?: 255F
     val minC = abs.minOrNull() ?: 0F
     val delta = maxC - minC
-    val H = when (maxC) {
+    val H = (when (maxC) {
         abs[0] -> 60 * ((abs[1] - abs[2]) / delta % 6)
         abs[1] -> 60 * ((abs[2] - abs[0]) / delta + 2)
         abs[2] -> 60 * ((abs[0] - abs[1]) / delta + 4)
         else -> 0F
-    }
+    } + 360) % 360
     val V = maxC
     val S = if (V != 0F) delta / V else 0F
     return HSV(H, S, V)
@@ -92,13 +91,13 @@ fun rgbToHsv(rgb: RGB): HSV {
 
 fun hsvToRgb(hsv: HSV): RGB {
     val C = hsv.V * hsv.S
-    val X = C * (1 - abs((hsv.H.toInt() / 60) % 2 - 1))
+    val X = C * (1 - abs((hsv.H / 60) % 2 - 1))
     val m = hsv.V - C
     val rgb = when (hsv.H.toInt()) {
         in 0 until 60 -> listOf(C, X, 0F)
         in 60 until 120 -> listOf(X, C, 0F)
         in 120 until 180 -> listOf(0F, C, X)
-        in 180 until 240 -> listOf(0F, C, X)
+        in 180 until 240 -> listOf(0F, X, C)
         in 240 until 300 -> listOf(X, 0F, C)
         in 300 until 360 -> listOf(C, 0F, X)
         else -> throw Exception("RGB to HSV cast error")
@@ -121,8 +120,8 @@ class Color(val rgb: RGB) {
 }
 
 
-fun generateColorScheme(colors: Int, seed: Color = Color(HSV(10F, 0.8F, 0.8F))): List<Color> {
-    return List(colors) { seed }.runningReduce { acc, _ -> acc.shift(360F / colors) }
+fun generateColorScheme(colors: Int, seed: Color = Color(HSV(10F, 0.2F, 0.7F))): List<Color> {
+    return List(colors) { index -> seed.shift(360F * index / colors) }
 }
 
 data class Position(val x: Float, val y: Float)

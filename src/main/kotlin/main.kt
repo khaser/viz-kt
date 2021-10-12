@@ -33,10 +33,13 @@ fun createWindow(title: String) = runBlocking(Dispatchers.Swing) {
 class Renderer(val layer: SkiaLayer) : SkiaRenderer {
     val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
     val font = Font(typeface, 40f)
-    val paint = Paint().apply {
-        mode = PaintMode.STROKE_AND_FILL
-        color = 0xffffffffL.toInt()
-        strokeWidth = 1f
+    val paintFill = Paint().apply {
+        mode = PaintMode.FILL
+    }
+    val paintStroke = Paint().apply {
+        mode = PaintMode.STROKE
+        color = 0xff000000L.toInt()
+        strokeWidth = 3f
     }
 
 
@@ -46,7 +49,7 @@ class Renderer(val layer: SkiaLayer) : SkiaRenderer {
         val w = (width / contentScale).toInt()
         val h = (height / contentScale).toInt()
 
-        canvas.drawRoundDiagram(listOf(10F,10F,10F,10F,10F,10F,10F,10F,10F,10F), listOf("a","a","a","a","a","a","a","a","a","a"), Position(500F, 500F), 300F)
+        canvas.drawRoundDiagram(listOf(10F,10F,10F,10F,10F,10F,10F,10F,20F), listOf("a","a","a","a","a","a","a","a","a"), Position(500F, 500F), 300F)
         layer.needRedraw()
     }
 
@@ -55,12 +58,13 @@ class Renderer(val layer: SkiaLayer) : SkiaRenderer {
         require(percents.size == names.size)
         fun drawSegment(startAngle: Float, endAngle: Float, paint: Paint) {
             drawArc(center.x - r, center.y - r, center.x + r, center.y + r, startAngle, endAngle - startAngle, true, paint)
+            drawArc(center.x - r, center.y - r, center.x + r, center.y + r, startAngle, endAngle - startAngle, true, paintStroke)
         }
 
         val colorScheme = generateColorScheme(percents.size)
         (percents zip colorScheme).fold(0F) { acc, (percent, segColor) ->
-            paint.color = segColor.getColorCode()
-            drawSegment(acc, acc + percent * 3.6F, paint)
+            paintFill.color = segColor.getColorCode()
+            drawSegment(acc, acc + percent * 3.6F, paintFill)
             acc + percent * 3.6F
         }
     }
@@ -120,8 +124,11 @@ class Color(val rgb: RGB) {
 }
 
 
-fun generateColorScheme(colors: Int, seed: Color = Color(HSV(10F, 0.2F, 0.7F))): List<Color> {
+fun generateColorScheme(colors: Int, seed: Color = Color(HSV(10F, 0.99F, 0.85F))): List<Color> {
     return List(colors) { index -> seed.shift(360F * index / colors) }
+//        .chunked(colors / 2).let {
+//        (it[0] zip it[1]).map{ listOf(it.first, it.second) }.flatten() + (it.getOrNull(2) ?: listOf())
+//    }
 }
 
 data class Position(val x: Float, val y: Float)

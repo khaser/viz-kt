@@ -57,8 +57,5 @@ class Color(val rgb: RGB) {
 
 fun generateColorScheme(colors: Int, seed: Color = Color(HSV(10F, 0.99F, 0.85F))): List<Color> {
     return List(colors) { index -> seed.shift(360F * index / colors) }
-//        .chunked(colors / 2).let {
-//        (it[0] zip it[1]).map{ listOf(it.first, it.second) }.flatten() + (it.getOrNull(2) ?: listOf())
-//    }
 }
 

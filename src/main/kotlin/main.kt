@@ -1,69 +1,46 @@
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.swing.Swing
-import org.jetbrains.skija.Canvas
-import org.jetbrains.skija.Rect
-import org.jetbrains.skiko.SkiaLayer
-import org.jetbrains.skiko.SkiaRenderer
-import org.jetbrains.skiko.SkiaWindow
-import java.awt.Dimension
-import java.awt.event.MouseEvent
-import java.awt.event.MouseMotionAdapter
-import javax.swing.WindowConstants
+import java.io.File
 
-fun main() {
-    createWindow("pf-2021-viz")
-}
+val userManual = """
+    custom delimiter
+   USER MANUAL TODO
+""".trimIndent()
 
-fun createWindow(title: String) = runBlocking(Dispatchers.Swing) {
-    val window = SkiaWindow()
-    window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
-    window.title = title
-    window.layer.renderer = Renderer(window.layer)
-    window.layer.addMouseMotionListener(MyMouseMotionAdapter)
-    window.preferredSize = Dimension(800, 600)
-    window.minimumSize = Dimension(100, 100)
-    window.pack()
-    window.layer.awaitRedraw()
-    window.isVisible = true
-}
+data class Entry(val name: String, val value: Int)
 
-data class Position(val x: Float, val y: Float)
+typealias Entries = List<Entry>
 
-class Renderer(val layer: SkiaLayer) : SkiaRenderer {
-
-    override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
-        val contentScale = layer.contentScale
-        canvas.scale(contentScale, contentScale)
-        val w = (width / contentScale).toInt()
-        val h = (height / contentScale).toInt()
-//        canvas.drawRoundDiagram(
-//            listOf(10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F, 20F),
-//            listOf("a", "B", "a", "a", "a", "a", "a", "a", "a"),
-//            Position(350F, 350F),
-//            300F,
-//            generateColorScheme(9)
-//        )
-        canvas.drawHistogram(
-            listOf(10F, 10F, 10F, 10F, 20F, 40F),
-            listOf("first", "Second", "third", "fours", "a", "a"),
-            Rect(100F, 100F, 400F, 800F),
-            generateColorScheme(6)
-        )
-        layer.needRedraw()
+fun parseLine(line: String, delimiter: Char): Entry? {
+    val splited = line.split(delimiter)
+    if (splited.size != 2) {
+        println("Wrong count of fields in line '$line'. In string must be only 2 fields")
+        return null
     }
-
-}
-
-
-object State {
-    var mouseX = 0f
-    var mouseY = 0f
-}
-
-object MyMouseMotionAdapter : MouseMotionAdapter() {
-    override fun mouseMoved(event: MouseEvent) {
-        State.mouseX = event.x.toFloat()
-        State.mouseY = event.y.toFloat()
+    val name = splited[0]
+    val value = splited[1].toIntOrNull()
+    return if (value != null) Entry(name, value) else {
+        println("Second field in line '$line' must be integer")
+        null
     }
+}
+
+fun saveReadData(fileName: String, delimiter: Char = ' '): Entries? {
+    val lines = try {
+        File(fileName).readLines()
+    } catch(error: Exception) {
+        println("Error while reading file $fileName")
+        return null
+    }
+    val data = lines.map { parseLine(it, delimiter) }
+    return if (data.all {it != null}) data.filterNotNull() else null
+}
+
+fun main(args: Array<String>) {
+    if (args.contains("-h") || args.contains("--help") || args.size != 2) {
+        println(userManual); return
+    }
+    val mode = args[0]
+    val fileName = args[1]
+    val data = saveReadData(fileName) ?: return
+
+    createWindow("The worst project ever!!!")
 }

@@ -1,7 +1,8 @@
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.swing.Swing
-import org.jetbrains.skija.*
+import org.jetbrains.skija.Canvas
+import org.jetbrains.skija.Rect
 import org.jetbrains.skiko.SkiaLayer
 import org.jetbrains.skiko.SkiaRenderer
 import org.jetbrains.skiko.SkiaWindow
@@ -36,11 +37,18 @@ class Renderer(val layer: SkiaLayer) : SkiaRenderer {
         canvas.scale(contentScale, contentScale)
         val w = (width / contentScale).toInt()
         val h = (height / contentScale).toInt()
-        canvas.drawRoundDiagram(
-            listOf(10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F, 20F),
-            listOf("a", "B", "a", "a", "a", "a", "a", "a", "a"),
-            Position(350F, 350F),
-            300F
+//        canvas.drawRoundDiagram(
+//            listOf(10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F, 20F),
+//            listOf("a", "B", "a", "a", "a", "a", "a", "a", "a"),
+//            Position(350F, 350F),
+//            300F,
+//            generateColorScheme(9)
+//        )
+        canvas.drawHistogram(
+            listOf(10F, 10F, 10F, 10F, 20F, 40F),
+            listOf("first", "Second", "third", "fours", "a", "a"),
+            Rect(100F, 100F, 400F, 800F),
+            generateColorScheme(6)
         )
         layer.needRedraw()
     }

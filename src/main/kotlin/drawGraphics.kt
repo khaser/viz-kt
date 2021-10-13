@@ -12,6 +12,7 @@ val paintStroke = Paint().apply {
 
 val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
 val font = Font(typeface, 40f)
+const val minPad = 20F;
 
 private fun Canvas.drawCircleForRoundDiagram(
     center: Position,
@@ -39,17 +40,22 @@ private fun Canvas.drawCircleForRoundDiagram(
     }
 }
 
-fun Canvas.drawElementOfLegend(anchor: Position, color: Color, name: String, font: Font): Rect {
+fun Canvas.drawElementOfLegend(anchor: Position, color: Color, name: String, font: Font, r: Float): Rect {
     val box = font.measureText(name)
-    val r = box.height / 2F
-    drawCircle(anchor.x + r, anchor.y + r, r, paintFill.apply { this.color = color.getColorCode() })
-    drawString(name, anchor.x + 2 * r, anchor.y + 2 * r, font, paintFill.apply { this.color = Color(RGB(0, 0, 0)).getColorCode() })
+    drawCircle(anchor.x + r, anchor.y + r, 0.6F * r, paintFill.apply { this.color = color.getColorCode() })
+    drawString(
+        name,
+        anchor.x + 2 * r,
+        anchor.y + r + box.height / 2F,
+        font,
+        paintFill.apply { this.color = Color(RGB(0, 0, 0)).getColorCode() })
     return box
 }
 
-fun Canvas.drawLegend(top: Float, left: Float, names: List<String>, colorScheme: List<Color>, font: Font) {
-    (names zip colorScheme).fold(top) { top, (name, color) ->
-        top + drawElementOfLegend(Position(left, top), color, name, font).height * 1.3F
+fun Canvas.drawLegend(left: Float, top: Float, names: List<String>, colorScheme: List<Color>, font: Font) {
+    val r = names.maxOf { font.measureText(it).height } / 2F
+    (names zip colorScheme).forEachIndexed { index, (name, color) ->
+        drawElementOfLegend(Position(left, top + 1.3F * index * 2 * r), color, name, font, r)
     }
 }
 
@@ -58,5 +64,5 @@ fun Canvas.drawRoundDiagram(percents: List<Float>, names: List<String>, center: 
     require(percents.size == names.size)
     val colors = generateColorScheme(percents.size)
     drawCircleForRoundDiagram(center, r, percents, colors)
-    drawLegend(0F, 0F, names, colors, font)
+    drawLegend(center.x + r + minPad, center.y - r, names, colors, font)
 }

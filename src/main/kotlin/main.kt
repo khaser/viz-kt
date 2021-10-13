@@ -39,7 +39,7 @@ class Renderer(val layer: SkiaLayer) : SkiaRenderer {
         canvas.drawRoundDiagram(
             listOf(10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F, 20F),
             listOf("a", "B", "a", "a", "a", "a", "a", "a", "a"),
-            Position(500F, 500F),
+            Position(350F, 350F),
             300F
         )
         layer.needRedraw()

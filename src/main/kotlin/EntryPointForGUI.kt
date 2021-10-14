@@ -11,11 +11,11 @@ import java.awt.event.MouseEvent
 import java.awt.event.MouseMotionAdapter
 import javax.swing.WindowConstants
 
-fun createWindow(title: String) = runBlocking(Dispatchers.Swing) {
+fun createWindow(title: String, data: Entries, type: Type) = runBlocking(Dispatchers.Swing) {
     val window = SkiaWindow()
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
     window.title = title
-    window.layer.renderer = Renderer(window.layer)
+    window.layer.renderer = Renderer(window.layer, data, type)
     window.layer.addMouseMotionListener(MyMouseMotionAdapter)
     window.preferredSize = Dimension(800, 600)
     window.minimumSize = Dimension(100, 100)
@@ -24,15 +24,16 @@ fun createWindow(title: String) = runBlocking(Dispatchers.Swing) {
     window.isVisible = true
 }
 
-data class Position(val x: Float, val y: Float)
 
-class Renderer(val layer: SkiaLayer) : SkiaRenderer {
+class Renderer(val layer: SkiaLayer, val data: Entries, val type: Type) : SkiaRenderer {
 
     override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
         val contentScale = layer.contentScale
         canvas.scale(contentScale, contentScale)
         val w = (width / contentScale).toInt()
         val h = (height / contentScale).toInt()
+        val diagram = Diagram(canvas, data)
+        diagram.draw(type, Rect(20F, 20F, 500F, 500F))
 //        canvas.drawRoundDiagram(
 //            listOf(10F, 10F, 10F, 10F, 10F, 10F, 10F, 10F, 20F),
 //            listOf("a", "B", "a", "a", "a", "a", "a", "a", "a"),
@@ -40,15 +41,15 @@ class Renderer(val layer: SkiaLayer) : SkiaRenderer {
 //            300F,
 //            generateColorScheme(9)
 //        )
-        canvas.drawHistogram(
-            listOf(10F, 10F, 10F, 10F, 20F, 40F),
-            listOf("first", "Second", "third", "fours", "a", "a"),
-            Rect(100F, 100F, 400F, 800F),
-            generateColorScheme(6)
-        )
+//        canvas.drawHistogram(
+//            listOf(10F, 10F, 10F, 10F, 20F, 40F),
+//            listOf("first", "Second", "third", "fours", "a", "a"),
+//            Rect(100F, 100F, 400F, 800F),
+//            generateColorScheme(6)
+//        )
+
         layer.needRedraw()
     }
-
 }
 
 

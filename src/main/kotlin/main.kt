@@ -2,6 +2,8 @@ import java.io.File
 
 val userManual = """
     custom delimiter
+    output filename
+    name value
    USER MANUAL TODO
 """.trimIndent()
 
@@ -34,13 +36,24 @@ fun saveReadData(fileName: String, delimiter: Char = ' '): Entries? {
     return if (data.all {it != null}) data.filterNotNull() else null
 }
 
+enum class Type() {
+    HISTOGRAM, ROUND
+}
+
+val stringToType = mapOf(
+    "hist" to Type.HISTOGRAM,
+    "round" to Type.ROUND
+)
+
+
 fun main(args: Array<String>) {
     if (args.contains("-h") || args.contains("--help") || args.size != 2) {
         println(userManual); return
     }
-    val mode = args[0]
+    val mode = stringToType[args[0]]
+    if (mode == null) { println("Wrong type of diagram"); return }
     val fileName = args[1]
     val data = saveReadData(fileName) ?: return
 
-    createWindow("The worst project ever!!!")
+    createWindow("The worst project ever!!!", data, mode)
 }

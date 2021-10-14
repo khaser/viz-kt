@@ -8,10 +8,22 @@ enum class Option(val longKey: String, val shortKey: String) {
     SCOPE_FONT("--sfont", "-s"),
     STROKE_WIDTH("--stroke", "-w"),
     DELIMITER("--delimiter", "-d"),
+    HUE("--hue", "-u"),
+    SATURATION("--saturation", "-a"),
+    BRIGHT("--bright", "-b"),
     SORT("--sort", "-o"),
 }
 
-val argOptions: Set<Option> = setOf(Option.FILE, Option.DELIMITER, Option.LEGEND_FONT, Option.SCOPE_FONT, Option.STROKE_WIDTH)
+val argOptions: Set<Option> = setOf(
+    Option.FILE,
+    Option.DELIMITER,
+    Option.LEGEND_FONT,
+    Option.SCOPE_FONT,
+    Option.STROKE_WIDTH,
+    Option.HUE,
+    Option.SATURATION,
+    Option.BRIGHT
+)
 val flagOptions: Set<Option> = setOf(Option.HELP, Option.SORT)
 val keyShortcut = Option.values().associate { Pair(it.shortKey, it.longKey) }
 val keyOption = Option.values().associateBy { it.longKey }

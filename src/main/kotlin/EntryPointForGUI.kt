@@ -1,3 +1,4 @@
+import input.Option
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.swing.Swing
@@ -9,7 +10,7 @@ import java.awt.Dimension
 import java.io.File
 import javax.swing.WindowConstants
 
-fun createWindow(title: String, data: Entries, type: Type, outFileName: String?) = runBlocking(Dispatchers.Swing) {
+fun createWindow(title: String, data: Entries, type: Type, options: Options) = runBlocking(Dispatchers.Swing) {
     val window = SkiaWindow()
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
     window.title = title
@@ -20,8 +21,8 @@ fun createWindow(title: String, data: Entries, type: Type, outFileName: String?)
     window.isVisible = true
     window.layer.fullscreen = true
     window.layer.awaitRedraw()
-    if (outFileName != null) {
-        val file = File(outFileName)
+    if (options[Option.FILE] != null) {
+        val file = File(options.getValue(Option.FILE))
         if (!file.exists() || file.canWrite()) {
             val image = Image.makeFromBitmap(window.layer.screenshot() ?: Bitmap()).encodeToData(EncodedImageFormat.PNG)
             file.writeBytes(image?.bytes ?: byteArrayOf())

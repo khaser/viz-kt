@@ -1,43 +1,16 @@
-import java.io.File
+import input.*
 
 val userManual = """
     -d STRING sets delimiter for fields in one line
     -o FILE if you want to save graphics to PNG FILE use it option
-    custom delimiter
-    output filename
    USER MANUAL TODO
 """.trimIndent()
 
 data class Entry(val name: String, val value: Int)
-
 typealias Entries = List<Entry>
+typealias Options = Map<Option, String>
 
-fun parseLine(line: String, delimiter: Char): Entry? {
-    val splited = line.split(delimiter)
-    if (splited.size != 2) {
-        println("Wrong count of fields in line '$line'. In string must be only 2 fields")
-        return null
-    }
-    val name = splited[0]
-    val value = splited[1].toIntOrNull()
-    return if (value != null) Entry(name, value) else {
-        println("Second field in line '$line' must be integer")
-        null
-    }
-}
-
-fun saveReadData(fileName: String, delimiter: Char = ' '): Entries? {
-    val lines = try {
-        File(fileName).readLines()
-    } catch(error: Exception) {
-        println("Error while reading file $fileName")
-        return null
-    }
-    val data = lines.map { parseLine(it, delimiter) }
-    return if (data.all {it != null}) data.filterNotNull() else null
-}
-
-enum class Type() {
+enum class Type {
     HISTOGRAM, ROUND
 }
 
@@ -53,8 +26,9 @@ fun main(args: Array<String>) {
     }
     val mode = stringToType[args[0]]
     if (mode == null) { println("Wrong type of diagram"); return }
-    val fileName = args[1]
-    val data = saveReadData(fileName) ?: return
+    val fileName = args.last()
+    val options = parseAllKeys(args.slice(1 until args.size - 1))
+    val data = saveReadData(fileName, options[Option.DELIMITER] ?: " ") ?: return
 
-    createWindow("The worst project ever!!!", data, mode, args.getOrNull(2))
+    createWindow("The worst project ever!!!", data, mode, options)
 }

@@ -62,7 +62,7 @@ class Diagram(val canvas: Canvas, data: Entries) {
         canvas.drawString(
             name,
             anchor.x + 2 * r,
-            anchor.y + r * 1.5F,
+            anchor.y + r + box.height / 2F,
             fontForLegend,
             this.paintFill.apply { this.color = Color(RGB(0, 0, 0)).getColorCode() })
         return box

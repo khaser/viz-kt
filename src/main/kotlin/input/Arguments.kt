@@ -4,18 +4,21 @@ package input
 enum class Option(val longKey: String, val shortKey: String) {
     HELP("--help", "-h"),
     FILE("--file", "-f"),
+    LEGEND_FONT("--lfont", "-l"),
+    SCOPE_FONT("--sfont", "-s"),
+    STROKE_WIDTH("--stroke", "-w"),
     DELIMITER("--delimiter", "-d"),
-    SORT("--sort", "-s"),
+    SORT("--sort", "-o"),
 }
 
-val argOptions: Set<Option> = setOf(Option.FILE, Option.DELIMITER)
+val argOptions: Set<Option> = setOf(Option.FILE, Option.DELIMITER, Option.LEGEND_FONT, Option.SCOPE_FONT, Option.STROKE_WIDTH)
 val flagOptions: Set<Option> = setOf(Option.HELP, Option.SORT)
-
 val keyShortcut = Option.values().associate { Pair(it.shortKey, it.longKey) }
 val keyOption = Option.values().associateBy { it.longKey }
 
 /** Parse all user input, main function of package*/
 fun parseAllKeys(args: List<String>): Map<Option, String> {
+    require(argOptions.size + flagOptions.size == Option.values().size)
     val result: MutableMap<Option, String> = mutableMapOf()
     //Cast all short keys to long keys
     val normalizedArgs = args.map { keyShortcut[it] ?: it }

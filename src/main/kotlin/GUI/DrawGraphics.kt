@@ -1,8 +1,14 @@
+package GUI
+
+import Entries
+import Options
+import Type
+import input.Option
 import org.jetbrains.skija.*
 import kotlin.math.abs
 import kotlin.math.min
 
-class Diagram(val canvas: Canvas, data: Entries) {
+class Diagram(val canvas: Canvas, data: Entries, options: Options) {
 
     val percents = data.sumOf { it.value }.let { sum -> data.map { it.value.toFloat() / sum * 100 } }
     val names = data.map { it.name }
@@ -17,12 +23,12 @@ class Diagram(val canvas: Canvas, data: Entries) {
     val paintStroke = Paint().apply {
         mode = PaintMode.STROKE
         color = 0xff000000L.toInt()
-        strokeWidth = 3f
+        strokeWidth = options[Option.STROKE_WIDTH]?.toFloatOrNull() ?: 3F
     }
 
     val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
-    val fontForLegend = Font(typeface, 60f)
-    val fontForScale = Font(typeface, 20f)
+    val fontForLegend = Font(typeface, options[Option.LEGEND_FONT]?.toFloatOrNull() ?: 40F)
+    val fontForScale = Font(typeface, options[Option.SCOPE_FONT]?.toFloatOrNull() ?: 20F)
     val minPad = 20F
 
     private val eps = 1e-4F
@@ -99,7 +105,13 @@ class Diagram(val canvas: Canvas, data: Entries) {
         val percents = listOf("20%", "40%", "60%", "80%", "100%")
         percents.forEachIndexed { index, str ->
             val y = scale.bottom - (scale.bottom - scale.top) * (index + 1) / percents.size
-            canvas.drawString(str, scale.left, y + fontForScale.measureText(str).height, fontForScale, paintFill)
+            canvas.drawString(
+                str,
+                scale.left,
+                y + fontForScale.measureText(str).height + paintStroke.strokeWidth,
+                fontForScale,
+                paintFill
+            )
             canvas.drawLine(scale.left, y, hist.right, y, paintStroke)
         }
 

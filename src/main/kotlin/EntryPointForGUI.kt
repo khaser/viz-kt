@@ -1,4 +1,5 @@
 import input.Option
+import GUI.Diagram
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.swing.Swing
@@ -14,7 +15,7 @@ fun createWindow(title: String, data: Entries, type: Type, options: Options) = r
     val window = SkiaWindow()
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
     window.title = title
-    window.layer.renderer = Renderer(window.layer, data, type)
+    window.layer.renderer = Renderer(window.layer, data, type, options)
     window.preferredSize = Dimension(800, 600)
     window.minimumSize = Dimension(100, 100)
     window.pack()
@@ -31,14 +32,14 @@ fun createWindow(title: String, data: Entries, type: Type, options: Options) = r
 }
 
 
-class Renderer(val layer: SkiaLayer, val data: Entries, val type: Type) : SkiaRenderer {
+class Renderer(val layer: SkiaLayer, val data: Entries, val type: Type, val options: Options) : SkiaRenderer {
 
     override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
         val contentScale = layer.contentScale
         canvas.scale(contentScale, contentScale)
 //        val w = (width / contentScale).toInt()
 //        val h = (height / contentScale).toInt()
-        val diagram = Diagram(canvas, data)
+        val diagram = Diagram(canvas, data, options)
         diagram.draw(type, Rect(20F, 20F, 500F, 500F))
         layer.needRedraw()
     }

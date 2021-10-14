@@ -1,3 +1,5 @@
+package GUI
+
 import org.jetbrains.skija.Color4f
 import kotlin.math.abs
 

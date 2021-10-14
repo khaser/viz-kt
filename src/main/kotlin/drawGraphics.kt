@@ -1,4 +1,5 @@
 import org.jetbrains.skija.*
+import kotlin.math.abs
 import kotlin.math.min
 
 class Diagram(val canvas: Canvas, data: Entries) {
@@ -20,20 +21,22 @@ class Diagram(val canvas: Canvas, data: Entries) {
     }
 
     val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
-    val fontForLegend = Font(typeface, 40f)
+    val fontForLegend = Font(typeface, 60f)
     val fontForScale = Font(typeface, 20f)
     val minPad = 20F
 
+    private val eps = 1e-4F
+
     fun draw(type: Type, box: Rect) {
+        require(abs(percents.reduce { acc, it -> acc + it } - 100F) <= eps)
+        require(percents.size == names.size)
         when (type) {
             Type.HISTOGRAM -> drawHistogram(percents, names, box)
             Type.ROUND -> drawRoundDiagram(percents, names, box)
         }
     }
 
-    fun drawHistogram(percents: List<Float>, names: List<String>, rect: Rect) {
-        require(percents.reduce { acc, it -> acc + it } == 100F)
-        require(percents.size == names.size)
+    private fun drawHistogram(percents: List<Float>, names: List<String>, rect: Rect) {
         val scaleBox = Rect(rect.left, rect.top, rect.left + fontForScale.measureText("100%").width, rect.bottom)
         val histBox = Rect(rect.left + fontForScale.measureText("100%").width, rect.top, rect.right, rect.bottom)
         drawBackground(histBox)
@@ -42,10 +45,8 @@ class Diagram(val canvas: Canvas, data: Entries) {
         drawScale(scaleBox, histBox)
     }
 
-    fun drawRoundDiagram(percents: List<Float>, names: List<String>, box: Rect) {
-        require(percents.reduce { acc, it -> acc + it } == 100F)
-        require(percents.size == names.size)
-        val r = min(box.height, box.width)
+    private fun drawRoundDiagram(percents: List<Float>, names: List<String>, box: Rect) {
+        val r = min(box.height, box.width) / 2.0F
         val center = Position(box.left + r, box.top + r)
         drawCircleForRoundDiagram(center, r, percents)
         drawLegend(center.x + r + this.minPad, center.y - r, names)
@@ -61,7 +62,7 @@ class Diagram(val canvas: Canvas, data: Entries) {
         canvas.drawString(
             name,
             anchor.x + 2 * r,
-            anchor.y + r + box.height / 2F,
+            anchor.y + r * 1.5F,
             fontForLegend,
             this.paintFill.apply { this.color = Color(RGB(0, 0, 0)).getColorCode() })
         return box

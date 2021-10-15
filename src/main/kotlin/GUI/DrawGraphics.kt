@@ -13,9 +13,9 @@ class Diagram(val canvas: Canvas, data: Entries, options: Options) {
     val percents = data.sumOf { it.value }.let { sum -> data.map { it.value.toFloat() / sum * 100 } }
     val names = data.map { it.name }
     val colorScheme = generateColorScheme(percents.size, Color(HSV(
-        (options[Option.HUE]?.toFloatOrNull() ?: 0F) % 360,
-        (options[Option.SATURATION]?.toFloatOrNull() ?: 0.8F) % 1,
-        (options[Option.BRIGHT]?.toFloatOrNull() ?: 0.8F) % 1
+        options[Option.HUE]?.toFloatOrNull() ?: 0F,
+        options[Option.SATURATION]?.toFloatOrNull() ?: 0.8F,
+        options[Option.BRIGHT]?.toFloatOrNull() ?: 0.8F
     )))
 
     data class Position(val x: Float, val y: Float)

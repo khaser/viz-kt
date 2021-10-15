@@ -28,7 +28,9 @@ fun main(args: Array<String>) {
     if (mode == null) { println("Wrong type of diagram"); return }
     val fileName = args.last()
     val options = parseAllKeys(args.slice(1 until args.size - 1))
-    val data = saveReadData(fileName, options[Option.DELIMITER] ?: " ") ?: return
-
+    var data = saveReadData(fileName, options[Option.DELIMITER] ?: " ") ?: return
+    if (options[Option.SORT] == "true") {
+        data = data.sortedWith(compareBy{it.value})
+    }
     createWindow("The worst project ever!!!", data, mode, options)
 }

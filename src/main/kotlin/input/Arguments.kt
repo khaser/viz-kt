@@ -39,6 +39,7 @@ fun parseAllKeys(args: List<String>): Map<Option, String> {
     flagOptions.forEach { result[it] = onlyKey.contains(it.longKey).toString() }
     //Parse keys with args
     parseKeysWithArgs(keyWithArg as MutableList, result)
+    validateHSV(result)
     return result
 }
 
@@ -63,4 +64,19 @@ private fun parseKeysWithArgs(args: MutableList<String>, result: MutableMap<Opti
         }
     }
     if (dropped.isNotEmpty()) println("Was ignored next keys: ${dropped.joinToString(" ")}")
+}
+
+fun validateHSV(options: MutableMap<Option, String>) {
+    val fH = options[Option.HUE]?.toFloatOrNull()
+    if (fH != null && (fH < 0 || fH >= 360)) {
+        println("Value for '${Option.HUE.longKey}' must be in [0, 360) range")
+        options[Option.HUE] = "0"
+    }
+    listOf(Option.SATURATION, Option.BRIGHT).forEach {
+        val value = options[it]?.toFloatOrNull()
+        if (value != null && (value <= 0 || value > 1)) {
+            println("Value for '${Option.SATURATION.longKey}' and '${Option.BRIGHT.longKey}' ")
+            options[it] = "0.9"
+        }
+    }
 }

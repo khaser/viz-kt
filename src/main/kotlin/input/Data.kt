@@ -2,7 +2,6 @@ package input
 import Entry
 import java.io.File
 
-
 typealias Entries = List<Entry>
 
 fun parseLine(line: String, delimiter: String): Entry? {

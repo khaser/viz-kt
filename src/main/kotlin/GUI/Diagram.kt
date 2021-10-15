@@ -158,9 +158,5 @@ class Diagram(val canvas: Canvas, val data: Entries, options: Options) {
 
     private fun calcTopValue(x: Int): Int {
         return 10F.pow(x.toString().length).toInt()
-//        val result = 10F.pow(x.toString().length - 1).toInt()
-//        if (x <= 2 * result) return 2 * result
-//        else if (x <= 5 * result) return 5 * result
-//        else return 10 * result
     }
 }

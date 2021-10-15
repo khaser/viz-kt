@@ -11,11 +11,12 @@ typealias Entries = List<Entry>
 typealias Options = Map<Option, String>
 
 enum class Type {
-    HISTOGRAM, ROUND
+    ABSOLUTE_HISTOGRAM, PERCENT_HISTOGRAM, ROUND
 }
 
 val stringToType = mapOf(
-    "hist" to Type.HISTOGRAM,
+    "hist" to Type.PERCENT_HISTOGRAM,
+    "abshist" to Type.ABSOLUTE_HISTOGRAM,
     "round" to Type.ROUND
 )
 

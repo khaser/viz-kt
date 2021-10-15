@@ -26,6 +26,8 @@ fun saveReadData(fileName: String, delimiter: String = " "): Entries? {
         println("Error while reading file $fileName")
         return null
     }
-    val data = lines.map { parseLine(it, delimiter) }
-    return if (data.all {it != null}) data.filterNotNull() else null
+    var data = lines.map { parseLine(it, delimiter) }
+    if (data.any {it == null}) return null
+    data = data.filterNotNull()
+    return data.ifEmpty { null }
 }

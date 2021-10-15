@@ -40,7 +40,7 @@ class Renderer(val layer: SkiaLayer, val data: Entries, val type: Type, val opti
 //        val w = (width / contentScale).toInt()
 //        val h = (height / contentScale).toInt()
         val diagram = Diagram(canvas, data, options)
-        diagram.draw(type, Rect(20F, 20F, 500F, 500F))
+        diagram.draw(type, Rect(20F, 20F, 770F, 570F))
         layer.needRedraw()
     }
 }

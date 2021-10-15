@@ -41,39 +41,33 @@ class Diagram(val canvas: Canvas, val data: Entries, options: Options) {
     val fontForLegend = Font(typeface, options[Option.LEGEND_FONT]?.toFloatOrNull() ?: 40F)
     val fontForScale = Font(typeface, options[Option.SCOPE_FONT]?.toFloatOrNull() ?: 20F)
     val minPad = 20F
-    val countElementsInScale = 5
+    val countElementsInScale = 10
 
     private val eps = 1e-4F
 
     fun draw(type: Type, box: Rect) {
         require(abs(percents.reduce { acc, it -> acc + it } - 100F) <= eps)
         require(percents.size == names.size)
+        val percentsFromTopValue = List(data.size) { values[it].toFloat() / topValue * 100F }
         when (type) {
-            Type.PERCENT_HISTOGRAM -> drawPercentHistogram(percents, names, box)
-            Type.ABSOLUTE_HISTOGRAM -> drawAbsoluteHistogram(values, names, box)
+            Type.PERCENT_HISTOGRAM -> drawHistogram(percents, names, box, generateScale("100").map{ "$it%" })
+            Type.ABSOLUTE_HISTOGRAM -> drawHistogram(percentsFromTopValue, names, box, generateScale(topValue.toString()))
             Type.ROUND -> drawRoundDiagram(percents, names, box)
         }
     }
 
-    private fun drawPercentHistogram(percents: List<Float>, names: List<String>, rect: Rect) {
-        val scaleBox = Rect(rect.left, rect.top, rect.left + fontForScale.measureText("100%").width, rect.bottom)
-        val histBox = Rect(rect.left + fontForScale.measureText("100%").width, rect.top, rect.right, rect.bottom)
+    private fun drawHistogram(percents: List<Float>, names: List<String>, rect: Rect, scale: List<String>) {
+        val textWidth = scale.map{fontForScale.measureText(it).width}.maxOf{it}
+        val scaleBox = Rect(rect.left, rect.top, rect.left + textWidth, rect.bottom)
+        val histBox = Rect(rect.left + textWidth, rect.top, rect.right, rect.bottom)
         drawBackground(histBox)
         drawColumns(histBox, percents)
         drawLegend(histBox.right, histBox.top + this.minPad, names)
-        drawScaleInPercents(scaleBox, histBox)
+        if (scale[0].last() == '%')
+            drawScale(scaleBox, histBox, scale, List(countElementsInScale){ (it + 1F) / countElementsInScale})
+        else
+            drawScale(scaleBox, histBox, scale, List(countElementsInScale){ scale[it].toFloat() / topValue})
     }
-
-    private fun drawAbsoluteHistogram(data: List<Int>, names: List<String>, rect: Rect) {
-        val scaleBox = Rect(rect.left, rect.top, rect.left + fontForScale.measureText("100%").width, rect.bottom)
-        val histBox = Rect(rect.left + fontForScale.measureText("100%").width, rect.top, rect.right, rect.bottom)
-        val percents = List(data.size) { data[it].toFloat() / topValue * 100F }
-        drawBackground(histBox)
-        drawColumns(histBox, percents)
-        drawLegend(histBox.right, histBox.top + this.minPad, names)
-        drawScaleInAbsoluteValue(scaleBox, histBox)
-    }
-
 
     private fun drawRoundDiagram(percents: List<Float>, names: List<String>, box: Rect) {
         val r = min(box.height, box.width) / 2.0F
@@ -139,27 +133,8 @@ class Diagram(val canvas: Canvas, val data: Entries, options: Options) {
         }
     }
 
-    private fun drawScaleInPercents(scaleBox: Rect, histBox: Rect) =
-        drawScale(scaleBox, histBox, generateScale("100%"), List(countElementsInScale){ (it + 1F) / countElementsInScale})
-
-    private fun drawScaleInAbsoluteValue(scaleBox: Rect, histBox: Rect) {
-        val scale = generateScale(topValue.toString())
-        drawScale(scaleBox, histBox, scale, List(countElementsInScale){ scale[it].toFloat() / topValue})
-    }
-
     private fun generateScale(top: String): List<String> {
-        if (top == "100%") {
-            return List(countElementsInScale) {((it + 1F) / countElementsInScale * 100).toInt().toString() + "%"}
-        }
-        return List(countElementsInScale - 1){it}.runningFold(top){ acc, _ ->
-            println(acc)
-            when (acc[0]) {
-                '1','2' -> (acc.toInt() / 2).toString()
-                '5' -> (acc.toInt() / 5 * 2).toString()
-                '0' -> "0"
-                else -> throw Exception("Wrong top format")
-            }
-        }.reversed()
+        return List(countElementsInScale){(top.toInt() * (it + 1) / 10).toString()}
     }
 
     private fun drawBackground(rect: Rect) {
@@ -182,9 +157,10 @@ class Diagram(val canvas: Canvas, val data: Entries, options: Options) {
     }
 
     private fun calcTopValue(x: Int): Int {
-        val result = 10F.pow(x.toString().length - 1).toInt()
-        if (x <= 2 * result) return 2 * result
-        else if (x <= 5 * result) return 5 * result
-        else return 10 * result
+        return 10F.pow(x.toString().length).toInt()
+//        val result = 10F.pow(x.toString().length - 1).toInt()
+//        if (x <= 2 * result) return 2 * result
+//        else if (x <= 5 * result) return 5 * result
+//        else return 10 * result
     }
 }

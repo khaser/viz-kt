@@ -13,8 +13,8 @@ fun parseLine(line: String, delimiter: String): Entry? {
     }
     val name = splited[0]
     val value = splited[1].trim().toIntOrNull()
-    return if (value != null) Entry(name, value) else {
-        println("Second field in line '$line' must be integer")
+    return if (value != null && value >= 0) Entry(name, value) else {
+        println("Second field in line '$line' must be positive integer or zero")
         null
     }
 }

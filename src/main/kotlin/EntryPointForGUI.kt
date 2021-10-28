@@ -37,8 +37,6 @@ class Renderer(val layer: SkiaLayer, val data: Entries, val type: Type, val opti
     override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
         val contentScale = layer.contentScale
         canvas.scale(contentScale, contentScale)
-//        val w = (width / contentScale).toInt()
-//        val h = (height / contentScale).toInt()
         val diagram = Diagram(canvas, data, options)
         diagram.draw(type, Rect(20F, 20F, 770F, 570F))
         layer.needRedraw()

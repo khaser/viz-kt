@@ -20,7 +20,6 @@ val stringToType = mapOf(
     "round" to Type.ROUND
 )
 
-
 fun main(args: Array<String>) {
     if (args.contains("-h") || args.contains("--help") || args.size < 2) {
         println(userManual); return

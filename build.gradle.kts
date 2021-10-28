@@ -51,3 +51,17 @@ tasks.getByName<Test>("test") {
 application {
     mainClass.set("MainKt")
 }
+
+tasks.register<Jar>("fatJar") {
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    manifest {
+        attributes(
+            mapOf("Main-Class" to "MainKt")
+        )
+    }
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
+    })
+}

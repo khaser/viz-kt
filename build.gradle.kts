@@ -55,7 +55,7 @@ application {
 tasks.register<Jar>("fatJar") {
     from(sourceSets.main.get().output)
     dependsOn(configurations.runtimeClasspath)
-    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+    setDuplicatesStrategy(DuplicatesStrategy.INCLUDE)
     manifest {
         attributes(
             mapOf("Main-Class" to "MainKt")

@@ -25,8 +25,6 @@ class Diagram(val canvas: Canvas, val data: Entries, options: Options) {
         )
     )
 
-    data class Position(val x: Float, val y: Float)
-
     val paintFill = Paint().apply {
         mode = PaintMode.FILL
     }
@@ -159,4 +157,6 @@ class Diagram(val canvas: Canvas, val data: Entries, options: Options) {
     private fun calcTopValue(x: Int): Int {
         return 10F.pow(x.toString().length).toInt()
     }
+
+    data class Position(val x: Float, val y: Float)
 }

@@ -4,7 +4,7 @@ import java.io.PrintStream
 import kotlin.test.*
 
 class SaveReadDataTest {
-    var path = "testFiles/DataInputTest"
+    var path = "testFiles"
     val standardOut = System.out
     var stream =  ByteArrayOutputStream()
 
@@ -67,15 +67,24 @@ class SaveReadDataTest {
     @Test
     fun fileWithFloat() {
         runTest("FileWithFloat.txt", null)
-        assertEquals("Second field in line 'float_data 150.1' must be positive integer or zero\n", stream.toString())
+        val correctStream = ByteArrayOutputStream().also{System.setOut(PrintStream(it))}
+        println("Second field in line 'float_data 150.1' must be positive integer or zero")
+        assertEquals(correctStream.toString(), stream.toString())
     }
 
     @Test
     fun missedInt() {
         runTest("MissedInt.txt", null)
         val correctStream = ByteArrayOutputStream().also{System.setOut(PrintStream(it))}
-        println("Second field in line 'data_without_integer ' must be positive integer or zero")
-        println("Wrong count of fields in line ''. In string must be only 2 fields")
+        println("Wrong count of fields in line 'data_without_integer'. In string must be only 2 fields")
+        assertEquals(correctStream.toString(), stream.toString())
+    }
+
+    @Test
+    fun negativeInt() {
+        runTest("NegativeInt.txt", null)
+        val correctStream = ByteArrayOutputStream().also{System.setOut(PrintStream(it))}
+        println("Second field in line 'data_with_negative_integer -1' must be positive integer or zero")
         assertEquals(correctStream.toString(), stream.toString())
     }
 }

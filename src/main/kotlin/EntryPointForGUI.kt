@@ -11,13 +11,15 @@ import java.awt.Dimension
 import java.io.File
 import javax.swing.WindowConstants
 
+val windowSize = Dimension(800, 600)
+val pad = 20F
+
 fun createWindow(title: String, data: Entries, type: Type, options: Options) = runBlocking(Dispatchers.Swing) {
     val window = SkiaWindow()
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
     window.title = title
     window.layer.renderer = Renderer(window.layer, data, type, options)
-    window.preferredSize = Dimension(800, 600)
-    window.minimumSize = Dimension(100, 100)
+    window.preferredSize = windowSize
     window.pack()
     window.isVisible = true
     window.layer.fullscreen = true
@@ -38,7 +40,7 @@ class Renderer(val layer: SkiaLayer, val data: Entries, val type: Type, val opti
         val contentScale = layer.contentScale
         canvas.scale(contentScale, contentScale)
         val diagram = Diagram(canvas, data, options)
-        diagram.draw(type, Rect(20F, 20F, 770F, 570F))
+        diagram.draw(type, Rect(pad, pad, windowSize.width - pad, windowSize.height - pad))
         layer.needRedraw()
     }
 }

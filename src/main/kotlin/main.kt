@@ -1,9 +1,16 @@
 import input.*
 
 val userManual = """
-    -d STRING sets delimiter for fields in one line
-    -o FILE if you want to save graphics to PNG FILE use it option
-   USER MANUAL TODO
+    --help or -h Display this help
+    --file or -f FILE save drawing graphics to FILE
+    --lfont or -l SIZE (Default: 40) set font size for legend section
+    --sfont or -s SIZE (Default: 20) set font size for scaling section
+    --stroke or -w WIDTH (Default: 3) set stroke width for divide filled parts of diagram
+    --delimiter or -d STRING (Default: ' ') set STRING as delimiting sequence for parsing your data file
+    --hue or -u VALUE (Default: 0) set H value for first color in palette 0<=VALUE<360
+    --saturation or -a VALUE (Default: 0.8) set saturation for all colors in palette 0<=VALUE<=1
+    --bright or -b VALUE (Default: 0.8) set bright for all colors in palette 0<=VALUE<=1
+    --sort or -o set legend and diagram by increasing of data values
 """.trimIndent()
 
 data class Entry(val name: String, val value: Int)
